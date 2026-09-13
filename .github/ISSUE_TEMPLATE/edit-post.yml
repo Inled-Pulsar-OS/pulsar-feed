@@ -1,30 +1,33 @@
-name: "✏️ Editar noticia"
-description: Modifica una noticia existente
-title: "✏️ Editar noticia"
+name: "Edit post"
+description: Modify an existing post
+title: "Edit post"
 labels: ["edit"]
 body:
+  - type: markdown
+    attributes:
+      value: Only the repository owner can edit content. Issues from other users are ignored.
   - type: input
     id: slug
     attributes:
-      label: Slug del post a editar
-      description: El identificador del post (nombre del archivo en content/posts sin .md). Si lo dejas vacío se editará el último post publicado.
+      label: Slug of the post to edit
+      description: The post identifier (file name in content/posts without .md).
     validations:
       required: true
   - type: input
     id: title
     attributes:
-      label: Nuevo título (opcional)
+      label: New title (optional)
   - type: dropdown
     id: category
     attributes:
-      label: Nueva categoría (opcional)
+      label: New category (optional)
       options:
         - ""
         - releases
-        - progreso
-        - anuncios
+        - progress
+        - announcements
   - type: textarea
     id: body
     attributes:
-      label: Nuevo contenido (opcional)
-      description: Si se deja vacío, solo se actualizan los campos rellenados.
+      label: New content (optional)
+      description: If left empty, only the filled fields are updated.

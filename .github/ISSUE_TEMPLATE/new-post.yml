@@ -1,34 +1,37 @@
-name: "📰 Nueva noticia"
-description: Crea una nueva noticia en el feed
-title: "📰 Nueva noticia: "
+name: "New post"
+description: Publish a new post to the feed
+title: "New post: "
 labels: ["create"]
 body:
+  - type: markdown
+    attributes:
+      value: Only the repository owner can publish content. Issues from other users are ignored.
   - type: input
     id: title
     attributes:
-      label: Título
-      placeholder: "PulsarOS 2.0 disponible"
+      label: Title
+      placeholder: "PulsarOS 2.0 available"
     validations:
       required: true
   - type: input
     id: category
     attributes:
-      label: Categoría
-      description: Debe existir en content/categories.json (releases, progress, announcements...). Crea una nueva con la plantilla "🏷️ New category".
+      label: Category
+      description: Must exist in content/categories.json (releases, progress, announcements...). Create a new one with the "New category" template.
       placeholder: "releases"
     validations:
       required: true
   - type: input
     id: slug
     attributes:
-      label: Slug (opcional)
-      description: Identificador corto en la URL del feed. Se genera del título si se deja vacío.
+      label: Slug (optional)
+      description: Short identifier for the feed URL. Generated from the title if left empty.
       placeholder: "pulsaros-2-0"
   - type: textarea
     id: body
     attributes:
-      label: Contenido (markdown)
-      description: Soporta **negrita**, *cursiva*, enlaces, listas, `código` e imágenes.
-      placeholder: "Qué novedades incluye esta versión..."
+      label: Content (markdown)
+      description: Supports **bold**, *italic*, links, lists, `code` and images.
+      placeholder: "What is included in this release..."
     validations:
       required: true

@@ -1,8 +1,11 @@
-name: "🏷️ New category"
+name: "New category"
 description: Register a new feed category (no code changes needed)
-title: "🏷️ New category: "
+title: "New category: "
 labels: ["add-category"]
 body:
+  - type: markdown
+    attributes:
+      value: Only the repository owner can create categories. Issues from other users are ignored.
   - type: input
     id: category
     attributes:

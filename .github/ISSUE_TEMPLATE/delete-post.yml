@@ -1,20 +1,23 @@
-name: "🗑️ Eliminar noticia"
-description: Borra una noticia existente del feed
-title: "🗑️ Eliminar noticia"
+name: "Delete post"
+description: Remove an existing post from the feed
+title: "Delete post"
 labels: ["delete"]
 body:
+  - type: markdown
+    attributes:
+      value: Only the repository owner can delete content. Issues from other users are ignored.
   - type: input
     id: slug
     attributes:
-      label: Slug del post a eliminar
-      description: El identificador del post (nombre del archivo en content/posts sin .md).
+      label: Slug of the post to delete
+      description: The post identifier (file name in content/posts without .md).
     validations:
       required: true
   - type: checkboxes
     id: confirm
     attributes:
-      label: Confirmación
+      label: Confirmation
       options:
-        - label: Confirmo que quiero eliminar este post permanentemente
+        - label: I confirm I want to permanently delete this post
     validations:
       required: true
