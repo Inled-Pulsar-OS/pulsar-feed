@@ -74,7 +74,7 @@ jobs:
       - name: Rebuild site
         if: steps.op.outputs.operation != 'unknown'
         env:
-          SITE_URL: ${{ vars.FEED_SITE_URL || 'https://pulsar-feed.pages.dev' }}
+          SITE_URL: ${{ vars.FEED_SITE_URL || 'https://feed-os.inled.es' }}
         run: node scripts/build.mjs
 
       - name: Commit and push

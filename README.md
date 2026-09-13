@@ -2,8 +2,8 @@
 
 An RSS feed managed entirely through **GitHub Issues and Actions**, published to **Cloudflare Pages**.
 
-- **Site**: https://pulsar-feed.pages.dev
-- **Feed**: https://pulsar-feed.pages.dev/feed.xml
+- **Site**: https://feed-os.inled.es
+- **Feed**: https://feed-os.inled.es/feed.xml
 
 ## How it works
 
@@ -76,7 +76,7 @@ Repository secrets (provided by the `Inled-Pulsar-OS` organization):
 
 Repository variable:
 
-- `FEED_SITE_URL` — public URL of the site (defaults to `https://pulsar-feed.pages.dev`)
+- `FEED_SITE_URL` — public URL of the site (defaults to `https://feed-os.inled.es`)
 
 The Cloudflare Pages project is `pulsar-feed` (production branch: `main`).
 To change the project name, edit both workflows.

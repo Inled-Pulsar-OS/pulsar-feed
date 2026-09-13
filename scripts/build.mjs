@@ -10,7 +10,7 @@ const POSTS_DIR = path.join(ROOT, "content/posts");
 const OUT_DIR = path.join(ROOT, "site");
 const PUBLIC_DIR = path.join(ROOT, "public");
 
-const SITE_URL = process.env.SITE_URL || "https://pulsar-feed.pages.dev";
+const SITE_URL = process.env.SITE_URL || "https://feed-os.inled.es";
 const SITE_TITLE = "Pulsar Feed";
 const SITE_DESC = "Releases, progress and announcements.";
 

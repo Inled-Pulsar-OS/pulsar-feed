@@ -15,4 +15,4 @@ This feed is managed entirely through GitHub Issues.
 
 GitHub Actions apply the change, rebuild the site and deploy to Cloudflare Pages automatically.
 
-Subscribe via RSS: [feed.xml](https://pulsar-feed.pages.dev/feed.xml).
+Subscribe via RSS: [feed.xml](https://feed-os.inled.es/feed.xml).
