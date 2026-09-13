@@ -137,9 +137,37 @@ const card = (p) => `
     <span class="pill pill-${p.category}">${label(p.category)}</span>
     <time datetime="${p.date}">${fmtDate(p.date)}</time>
   </div>
-  <h2>${esc(p.title)}</h2>
+  <h2><a class="post-link" href="post/${p.slug}/">${esc(p.title)}</a></h2>
   <div class="card-body">${mdToHtml(p.body)}</div>
 </article>`;
+
+const postPage = (p) => `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(p.title)} - ${SITE_TITLE}</title>
+<meta name="description" content="${esc(p.body.slice(0, 150).replace(/\n/g, " "))}">
+<link rel="alternate" type="application/rss+xml" title="${SITE_TITLE}" href="${SITE_URL}/feed.xml">
+<style>
+@import url("/base.css");
+</style>
+</head>
+<body>
+<main class="post-page">
+  <a class="back" href="/">&larr; All posts</a>
+  <article class="card">
+    <div class="card-top">
+      <span class="pill pill-${p.category}">${label(p.category)}</span>
+      <time datetime="${p.date}">${fmtDate(p.date)}</time>
+    </div>
+    <h1>${esc(p.title)}</h1>
+    <div class="card-body">${mdToHtml(p.body)}</div>
+  </article>
+</main>
+</body>
+</html>
+`;
 
 const html = `<!doctype html>
 <html lang="en">
@@ -149,55 +177,7 @@ const html = `<!doctype html>
 <title>${SITE_TITLE}</title>
 <meta name="description" content="${SITE_DESC}">
 <link rel="alternate" type="application/rss+xml" title="${SITE_TITLE}" href="${SITE_URL}/feed.xml">
-<style>
-:root{
-  --bg:#f5f5f7;--card:#ffffff;--text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;
-  --border:rgba(0,0,0,.08);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
-  background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.55}
-.hero{padding:120px 24px 60px;text-align:center;max-width:840px;margin:0 auto}
-.hero h1{font-size:clamp(40px,7vw,72px);font-weight:700;letter-spacing:-.02em}
-.hero p{font-size:clamp(18px,2.5vw,24px);color:var(--muted);margin-top:14px;font-weight:500}
-.actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:980px;
-  font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;border:none;
-  transition:transform .15s ease,opacity .15s ease}
-.btn:active{transform:scale(.97)}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-secondary{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
-.btn.copied{opacity:.7}
-main{max-width:720px;margin:0 auto;padding:20px 24px 100px;display:flex;flex-direction:column;gap:28px}
-.card{background:var(--card);border-radius:22px;padding:36px;box-shadow:0 4px 24px rgba(0,0,0,.06);
-  border:1px solid var(--border)}
-.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.card time{color:var(--muted);font-size:14px}
-.card h2{font-size:28px;font-weight:700;letter-spacing:-.01em;margin-bottom:14px}
-.card-body{color:var(--text);font-size:17px}
-.card-body p{margin-bottom:12px}
-.card-body a{color:var(--accent);text-decoration:none}
-.card-body a:hover{text-decoration:underline}
-.card-body img{max-width:100%;border-radius:14px;margin:8px 0}
-.card-body code{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:.9em;
-  background:rgba(128,128,128,.15);padding:2px 6px;border-radius:6px}
-.card-body pre{background:rgba(128,128,128,.12);padding:16px;border-radius:12px;overflow-x:auto;margin-bottom:12px}
-.card-body pre code{background:none;padding:0}
-.card-body ul{padding-left:24px;margin-bottom:12px}
-.pill{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
-  padding:5px 12px;border-radius:980px}
-${categoryCSS}
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
-.reveal.visible{opacity:1;transform:none}
-.empty{text-align:center;color:var(--muted);padding:60px 0;font-size:18px}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:var(--text);color:var(--bg);padding:10px 22px;border-radius:980px;
-  font-size:14px;font-weight:600;transition:transform .3s ease;pointer-events:none}
-.toast.show{transform:translateX(-50%) translateY(0)}
-footer{text-align:center;color:var(--muted);font-size:13px;padding:0 24px 60px}
-footer a{color:var(--accent);text-decoration:none}
-</style>
+<link rel="stylesheet" href="/base.css">
 </head>
 <body>
 <header class="hero">
@@ -233,10 +213,62 @@ document.getElementById('copy-feed').addEventListener('click',async function(){
 
 fs.writeFileSync(path.join(OUT_DIR, "index.html"), html);
 
+// Shared stylesheet used by the index and post pages
+const baseCSS = `:root{--bg:#f5f5f7;--card:#ffffff;--text:#1d1d1f;--muted:#6e6e73;--accent:#0071e3;--border:rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.55}
+.hero{padding:120px 24px 60px;text-align:center;max-width:840px;margin:0 auto}
+.hero h1{font-size:clamp(40px,7vw,72px);font-weight:700;letter-spacing:-.02em}
+.hero p{font-size:clamp(18px,2.5vw,24px);color:var(--muted);margin-top:14px;font-weight:500}
+.actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:980px;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;border:none;transition:transform .15s ease,opacity .15s ease}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.copied{opacity:.7}
+main{max-width:720px;margin:0 auto;padding:20px 24px 100px;display:flex;flex-direction:column;gap:28px}
+main.post-page{padding-top:60px}
+.card{background:var(--card);border-radius:22px;padding:36px;box-shadow:0 4px 24px rgba(0,0,0,.06);border:1px solid var(--border)}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card time{color:var(--muted);font-size:14px}
+.card h1{font-size:34px;font-weight:700;letter-spacing:-.01em;margin-bottom:14px}
+.card h2{font-size:28px;font-weight:700;letter-spacing:-.01em;margin-bottom:14px}
+.post-link{color:inherit;text-decoration:none}
+.post-link:hover{color:var(--accent)}
+.back{color:var(--accent);text-decoration:none;font-weight:600;font-size:15px}
+.card-body{color:var(--text);font-size:17px}
+.card-body p{margin-bottom:12px}
+.card-body a{color:var(--accent);text-decoration:none}
+.card-body a:hover{text-decoration:underline}
+.card-body img{max-width:100%;border-radius:14px;margin:8px 0}
+.card-body code{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:.9em;background:rgba(128,128,128,.15);padding:2px 6px;border-radius:6px}
+.card-body pre{background:rgba(128,128,128,.12);padding:16px;border-radius:12px;overflow-x:auto;margin-bottom:12px}
+.card-body pre code{background:none;padding:0}
+.card-body ul{padding-left:24px;margin-bottom:12px}
+.pill{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:5px 12px;border-radius:980px}
+${categoryCSS}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+.empty{text-align:center;color:var(--muted);padding:60px 0;font-size:18px}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:var(--bg);padding:10px 22px;border-radius:980px;font-size:14px;font-weight:600;transition:transform .3s ease;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:0 24px 60px}
+footer a{color:var(--accent);text-decoration:none}
+`;
+fs.writeFileSync(path.join(OUT_DIR, "base.css"), baseCSS);
+
+// Dedicated page per post: site/post/<slug>/index.html
+for (const p of posts) {
+  const dir = path.join(OUT_DIR, "post", p.slug);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "index.html"), postPage(p));
+}
+
 // RSS 2.0
 const item = (p) => `    <item>
       <title>${esc(p.title)}</title>
-      <link>${SITE_URL}/#${p.slug}</link>
+      <link>${SITE_URL}/post/${p.slug}/</link>
       <guid isPermaLink="false">${p.slug}</guid>
       <pubDate>${new Date(p.date).toUTCString()}</pubDate>
       <category>${esc(p.category)}</category>
