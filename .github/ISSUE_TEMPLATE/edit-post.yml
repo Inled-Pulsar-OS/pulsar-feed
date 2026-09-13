@@ -1,0 +1,30 @@
+name: "✏️ Editar noticia"
+description: Modifica una noticia existente
+title: "✏️ Editar noticia"
+labels: ["edit"]
+body:
+  - type: input
+    id: slug
+    attributes:
+      label: Slug del post a editar
+      description: El identificador del post (nombre del archivo en content/posts sin .md). Si lo dejas vacío se editará el último post publicado.
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Nuevo título (opcional)
+  - type: dropdown
+    id: category
+    attributes:
+      label: Nueva categoría (opcional)
+      options:
+        - ""
+        - releases
+        - progreso
+        - anuncios
+  - type: textarea
+    id: body
+    attributes:
+      label: Nuevo contenido (opcional)
+      description: Si se deja vacío, solo se actualizan los campos rellenados.

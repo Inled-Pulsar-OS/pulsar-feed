@@ -1,0 +1,23 @@
+name: "🏷️ New category"
+description: Register a new feed category (no code changes needed)
+title: "🏷️ New category: "
+labels: ["add-category"]
+body:
+  - type: input
+    id: category
+    attributes:
+      label: Category name
+      description: Will be slugified for the feed (e.g. "Deep Dives" -> "deep-dives").
+    validations:
+      required: true
+  - type: input
+    id: label
+    attributes:
+      label: Display label (optional)
+      description: How it appears on the site. Defaults to the name above.
+  - type: input
+    id: color
+    attributes:
+      label: Accent color (optional)
+      description: Hex color for the category pill, e.g. "#4a148c".
+      placeholder: "#4a148c"

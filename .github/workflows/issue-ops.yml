@@ -1,0 +1,117 @@
+name: Issue Ops (create / edit / delete post)
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: issue-ops-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine operation
+        id: op
+        env:
+          TITLE: ${{ github.event.issue.title }}
+          BODY: ${{ github.event.issue.body }}
+          LABELS: ${{ toJSON(github.event.issue.labels.*.name) }}
+        run: node scripts/issue-ops.mjs
+
+      - name: Add category
+        if: steps.op.outputs.operation == 'add-category'
+        env:
+          TITLE: ${{ steps.op.outputs.title }}
+          NEW_CATEGORY_NAME: ${{ steps.op.outputs.new_category_name }}
+          CATEGORY_LABEL: ${{ steps.op.outputs.category_label }}
+          CATEGORY_COLOR: ${{ steps.op.outputs.category_color }}
+        run: node scripts/category-add.mjs
+
+      - name: Create post
+        if: steps.op.outputs.operation == 'create'
+        env:
+          TITLE: ${{ steps.op.outputs.title }}
+          CATEGORY: ${{ steps.op.outputs.category }}
+          BODY: ${{ steps.op.outputs.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node scripts/post-create.mjs
+
+      - name: Edit post
+        if: steps.op.outputs.operation == 'edit'
+        env:
+          SLUG: ${{ steps.op.outputs.slug }}
+          TITLE: ${{ steps.op.outputs.title }}
+          CATEGORY: ${{ steps.op.outputs.category }}
+          BODY: ${{ steps.op.outputs.body }}
+        run: node scripts/post-edit.mjs
+
+      - name: Delete post
+        if: steps.op.outputs.operation == 'delete'
+        env:
+          SLUG: ${{ steps.op.outputs.slug }}
+        run: node scripts/post-delete.mjs
+
+      - name: Rebuild site
+        if: steps.op.outputs.operation != 'unknown'
+        env:
+          SITE_URL: ${{ vars.FEED_SITE_URL || 'https://pulsar-feed.pages.dev' }}
+        run: node scripts/build.mjs
+
+      - name: Commit & push
+        if: steps.op.outputs.operation != 'unknown'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "content: ${{ steps.op.outputs.operation }} post from issue #${{ github.event.issue.number }}"
+          git push
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.op.outputs.operation != 'unknown'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy site --project-name=pulsar-feed --commit-dirty=true
+
+      - name: Close issue with result
+        if: always() && steps.op.outputs.operation != 'unknown'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const op = '${{ steps.op.outputs.operation }}';
+            const success = '${{ job.status }}' === 'success';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: success
+                ? `✅ Operación \`${op}\` completada: post procesado, sitio reconstruido y desplegado a Cloudflare Pages.`
+                : `❌ Falló la operación \`${op}\`. Revisa los [logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed'
+            });
+
+      - name: Report unknown operation
+        if: steps.op.outputs.operation == 'unknown'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '⚠️ No pude determinar la operación. Usa una de las plantillas de issue: 📰 Nueva noticia, ✏️ Editar noticia o 🗑️ Eliminar noticia.'
+            });

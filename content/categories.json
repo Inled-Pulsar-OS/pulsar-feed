@@ -1,0 +1,18 @@
+{
+  "releases": {
+    "label": "Releases",
+    "color": "#1b5e20"
+  },
+  "progress": {
+    "label": "Progress",
+    "color": "#0d47a1"
+  },
+  "announcements": {
+    "label": "Announcements",
+    "color": "#e65100"
+  },
+  "deep-dives": {
+    "label": "Deep Dives",
+    "color": "#4a148c"
+  }
+}
