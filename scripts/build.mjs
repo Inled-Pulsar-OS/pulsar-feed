@@ -10,8 +10,8 @@ const POSTS_DIR = path.join(ROOT, "content/posts");
 const OUT_DIR = path.join(ROOT, "site");
 const PUBLIC_DIR = path.join(ROOT, "public");
 
-const SITE_URL = process.env.SITE_URL || "https://feed-os.inled.es";
-const SITE_TITLE = "Pulsar Feed";
+const SITE_URL = "https://feed-os.inled.es";
+const SITE_TITLE = "PulsarOS RSS Feed";
 const SITE_DESC = "Releases, progress and announcements.";
 
 // Categories: content/categories.json holds curated metadata (color, label);
@@ -185,7 +185,7 @@ const html = `<!doctype html>
   <p>${SITE_DESC}</p>
   <div class="actions">
     <button class="btn btn-primary" id="copy-feed" data-url="${SITE_URL}/feed.xml">
-      ⧉ Copy RSS Feed URL
+      Copy RSS Feed URL
     </button>
     <a class="btn btn-secondary" href="feed.xml" target="_blank" rel="noopener">View raw XML feed →</a>
   </div>
